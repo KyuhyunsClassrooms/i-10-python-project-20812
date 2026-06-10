@@ -1,6 +1,6 @@
 # AI 활용 자유 주제 파이썬 미니 프로젝트
-# 이름 또는 학번: 
-# 프로젝트 주제: 
+# 이름 또는 학번: 20812
+# 프로젝트 주제: 곰부방법추천
 
 # ============================================================
 # 사용 안내
@@ -30,72 +30,71 @@
 # 3번 열: 활동 유형
 # ------------------------------------------------------------
 
-activities = [
-    ["산책하기", 30, "피곤", "운동"],
-    ["짧은 낮잠", 20, "피곤", "휴식"],
-    ["좋아하는 음악 듣기", 10, "우울", "휴식"],
-    ["문제집 3쪽 풀기", 40, "차분", "공부"],
-    ["방 정리하기", 25, "답답", "생활"],
-    ["친구에게 연락하기", 15, "우울", "소통"],
+# [공부법 이름, 성향 번호, 집중시간 번호, 과목타입 번호]
+study_methods = [
+    ["뽀모도로 기법", 1, 1, 1],      # 혼자, 짧게, 암기
+    ["하브루타 말하기", 2, 2, 2],  # 함께, 길게, 이해
+    ["백지 복습법", 1, 2, 1],      # 혼자, 길게, 암기
+    ["오답 노트 분석", 1, 1, 2],    # 혼자, 짧게, 이해
+    ["스터디 그룹 퀴즈", 2, 1, 1]   # 함께, 짧게, 암기
 ]
 
 
-# ------------------------------------------------------------
-# 2. 함수 정의
-# ------------------------------------------------------------
+def show_menu():
+    """
+    사용자에게 성향, 집중 시간, 과목 타입을 질문하고
+    선택한 번호들을 반환하는 함수
+    """
+    print("=== 공부 방법 추천기 ===")
 
-def show_intro():
-    """프로그램 제목과 안내를 출력한다."""
-    print("=" * 40)
-    print("AI 활용 자유 주제 파이썬 미니 프로젝트")
-    print("예시: 기분과 시간에 따른 활동 추천기")
-    print("=" * 40)
+    user_tendency = int(input("1. 혼자 공부  2. 함께 공부 : "))
+    user_time = int(input("1. 짧게 집중  2. 길게 집중 : "))
+    user_subject = int(input("1. 암기 과목  2. 이해/문제풀이 과목 : "))
 
-
-def get_user_input():
-    """사용자에게 기분과 남은 시간을 입력받는다."""
-    mood = input("현재 기분을 입력하세요. 예: 피곤, 우울, 차분, 답답: ")
-    minutes = int(input("사용 가능한 시간을 분 단위로 입력하세요: "))
-    return mood, minutes
+    return user_tendency, user_time, user_subject
 
 
-def find_recommendations(data, mood, minutes):
-    """2차원 리스트를 반복하며 조건에 맞는 활동을 찾는다."""
-    results = []
+def recommend_method(methods, tendency, time, subject):
+    """
+    사용자의 조건과 일치하는 공부법을 찾아 반환
+    """
+    recommended = []
 
-    for row in data:
-        name = row[0]
-        required_minutes = row[1]
-        recommended_mood = row[2]
-        activity_type = row[3]
+    for method in methods:
+        if (
+            method[1] == tendency
+            and method[2] == time
+            and method[3] == subject
+        ):
+            recommended.append(method[0])
 
-        # 조건문: 사용자의 기분과 시간이 활동 조건에 맞는지 판단한다.
-        if recommended_mood == mood and required_minutes <= minutes:
-            results.append([name, required_minutes, activity_type])
-
-    return results
+    return recommended
 
 
-def print_result(results):
-    """추천 결과를 출력한다."""
-    print("\n[추천 결과]")
+def print_result(result_list):
+    """
+    추천 결과 출력
+    """
+    print("\n=== 추천 결과 ===")
 
-    if len(results) == 0:
-        print("조건에 맞는 활동이 없습니다.")
-        print("시간을 늘리거나 다른 기분을 입력해 보세요.")
+    if len(result_list) == 0:
+        print("아쉽게도 선택하신 조건과 딱 맞는 공부 방법을 찾지 못했습니다. 😢")
+        print("다른 조건으로 다시 시도해 보세요!")
     else:
-        for item in results:
-            print(f"- {item[0]} / {item[1]}분 / 유형: {item[2]}")
+        print("당신에게 딱 맞는 공부 방법을 추천해 드립니다! 🎉")
+
+        for method in result_list:
+            print(f"👉 추천 공부법: {method}")
 
 
-def main():
-    show_intro()
-    mood, minutes = get_user_input()
-    results = find_recommendations(activities, mood, minutes)
-    print_result(results)
+# 메인 코드
+tendency, time, subject = show_menu()
 
+result = recommend_method(
+    study_methods,
+    tendency,
+    time,
+    subject
+)
 
-# ------------------------------------------------------------
-# 3. 프로그램 실행
-# ------------------------------------------------------------
-main()
+print_result(result)
