@@ -30,71 +30,62 @@
 # 3번 열: 활동 유형
 # ------------------------------------------------------------
 
-# [공부법 이름, 성향 번호, 집중시간 번호, 과목타입 번호]
-study_methods = [
-    ["뽀모도로 기법", 1, 1, 1],      # 혼자, 짧게, 암기
-    ["하브루타 말하기", 2, 2, 2],  # 함께, 길게, 이해
-    ["백지 복습법", 1, 2, 1],      # 혼자, 길게, 암기
-    ["오답 노트 분석", 1, 1, 2],    # 혼자, 짧게, 이해
-    ["스터디 그룹 퀴즈", 2, 1, 1]   # 함께, 짧게, 암기
+# [1단계] 약 데이터 정의 (2차원 리스트)
+medicine_data = [
+    ["타이레놀", "두통", "하루 3번, 1~2정", "Y"],
+    ["베아제", "소화불량", "하루 3번, 1정", "N"],
+    ["화이투벤", "감기", "하루 3번, 2캡슐", "Y"],
+    ["지르텍", "알레르기", "하루 1번, 1정", "N"]
 ]
 
+# [2단계] 기능별 함수 분리 (총 3개의 함수)
 
-def show_menu():
-    """
-    사용자에게 성향, 집중 시간, 과목 타입을 질문하고
-    선택한 번호들을 반환하는 함수
-    """
-    print("=== 공부 방법 추천기 ===")
+# 함수 1: 약 검색 함수 (데이터 탐색 및 조건 판정 담당)
+def search_medicine(data_list, user_symptom, user_age):
+    found_medicine = None
 
-    user_tendency = int(input("1. 혼자 공부  2. 함께 공부 : "))
-    user_time = int(input("1. 짧게 집중  2. 길게 집중 : "))
-    user_subject = int(input("1. 암기 과목  2. 이해/문제풀이 과목 : "))
+    for med in data_list:
+        if med[1] == user_symptom:
+            # 어린이가 복용 불가능한 약인 경우 특별한 신호 반환
+            if user_age < 12 and med[3] == "N":
+                found_medicine = "어린이불가"
+                return found_medicine
 
-    return user_tendency, user_time, user_subject
+            # 조건에 맞는 약 정보 저장
+            found_medicine = med
 
-
-def recommend_method(methods, tendency, time, subject):
-    """
-    사용자의 조건과 일치하는 공부법을 찾아 반환
-    """
-    recommended = []
-
-    for method in methods:
-        if (
-            method[1] == tendency
-            and method[2] == time
-            and method[3] == subject
-        ):
-            recommended.append(method[0])
-
-    return recommended
+    return found_medicine
 
 
-def print_result(result_list):
-    """
-    추천 결과 출력
-    """
-    print("\n=== 추천 결과 ===")
+# 함수 2: 약 정보 출력 함수 (네가 추가한 함수! 출력만 전담)
+def print_medicine_info(medicine):
+    print("\n--- 🔍 추천 약 정보 ---")
+    print(f"추천 약 이름: {medicine[0]}")
+    print(f"복용 방법: {medicine[2]}")
 
-    if len(result_list) == 0:
-        print("아쉽게도 선택하신 조건과 딱 맞는 공부 방법을 찾지 못했습니다. 😢")
-        print("다른 조건으로 다시 시도해 보세요!")
+
+# 함수 3: 메인 흐름 제어 함수 (입력 및 전체 흐름 담당)
+def main():
+    print("=== 💊 맞춤형 상비약 안내 프로그램 ===")
+
+    symptom_input = input("현재 증상을 입력하세요 (두통 / 소화불량 / 감기 / 알레르기): ")
+    age_input = int(input("나이를 숫자로만 입력하세요 (만 나이): "))
+
+    # 1. 검색 함수 호출
+    result = search_medicine(medicine_data, symptom_input, age_input)
+
+    # 2. 결과에 따른 조건문 처리 및 출력 함수 호출
+    if result == "어린이불가":
+        print("⚠️ 어린이는 해당 약을 복용할 수 없습니다. 의사 또는 약사와 상의하세요.")
+
+    elif result is not None:
+        # 정상적인 약 정보를 찾았을 때, 네가 만든 출력 함수를 호출하며 데이터를 넘겨줌!
+        print_medicine_info(result)
+
     else:
-        print("당신에게 딱 맞는 공부 방법을 추천해 드립니다! 🎉")
-
-        for method in result_list:
-            print(f"👉 추천 공부법: {method}")
+        print("❌ 입력한 증상에 맞는 약을 찾을 수 없습니다.")
 
 
-# 메인 코드
-tendency, time, subject = show_menu()
-
-result = recommend_method(
-    study_methods,
-    tendency,
-    time,
-    subject
-)
-
-print_result(result)
+# [3단계] 프로그램 시작
+if __name__ == "__main__":
+    main()
